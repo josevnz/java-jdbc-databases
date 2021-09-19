@@ -10,7 +10,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class Module2_Tests {
-    private Class databaseClass;
+    private Class<Database> databaseClass;
 
     private Field urlField;
 
@@ -23,7 +23,7 @@ public class Module2_Tests {
     @Before
     public void setup() {
         try {
-            databaseClass = Class.forName("com.pluralsight.order.util.Database");
+            databaseClass = (Class<Database>) Class.forName("com.pluralsight.order.util.Database");
         } catch (ClassNotFoundException e) {
             //e.printStackTrace();
         }
@@ -90,7 +90,7 @@ public class Module2_Tests {
 
     @Test
     public void task_4() {
-        Connection con = null;
+        Connection con;
         try {
             con = databaseInstance.getConnection();
             assertNotNull("The method `getConnection()` returned `null`. Make sure you're opening the connection with the right parameters.",
@@ -100,8 +100,7 @@ public class Module2_Tests {
             con.close();
         } catch (Exception e) {
             //e.printStackTrace();
-            assertTrue("The connection is not valid. The method `getConnection()` threw an exception. Make sure you're opening the connection with the right parameters.",
-                    false);
+            fail("The connection is not valid. The method `getConnection()` threw an exception. Make sure you're opening the connection with the right parameters.");
         }
     }
 }
