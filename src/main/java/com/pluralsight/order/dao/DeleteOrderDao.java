@@ -7,7 +7,9 @@ import com.pluralsight.order.util.ExceptionHandler;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DAO to delete an order
@@ -31,10 +33,10 @@ public class DeleteOrderDao {
     public int deleteOrdersById(ParamsDto paramsDto) {
         int numberResults = 0;
 
-        try (Connection con = null;
+        try (Connection con = database.getConnection();
              PreparedStatement ps = createPreparedStatement(con, paramsDto.getOrderIds())
         ) {
-
+            numberResults = ps.executeUpdate();
         } catch (SQLException ex) {
             ExceptionHandler.handleException(ex);
         }
@@ -48,22 +50,31 @@ public class DeleteOrderDao {
      * @return Delete SQL statement
      */
     private String buildDeleteSql(List<Long> orderIds) {
-        String ids = null;
-
+        /*
+         * One way to do it is to generate the SQL directly, instead of streams instead of the suggested
+         * 'String.join() and Collections.nCopies()' solution
+         * String ids = orderIds.stream().map(Object::toString).collect(Collectors.joining(","));
+         * But then ... there is no point of using a PreparedStatement.
+         * The upside of using a PreparedStatement is that it will protect the code from SQL injection attacks.
+         */
+        final List<String> placeHolders = Collections.nCopies(orderIds.size(), "?");
+        final String ids = String.join(",", placeHolders);
         return "DELETE FROM orders o WHERE o.order_id IN (" + ids + ")";
     }
 
     /**
      * Creates a PreparedStatement object to delete one or more orders
-     * @param con Connnection object
+     * @param con Connection object
      * @param orderIds Order IDs to set on the PreparedStatement
      * @return A PreparedStatement object
      * @throws SQLException In case of an error
      */
     private PreparedStatement createPreparedStatement(Connection con, List<Long> orderIds) throws SQLException {
         String sql = buildDeleteSql(orderIds);
-        PreparedStatement ps = null;
-
+        PreparedStatement ps = con.prepareStatement(sql);
+        for (int i = 1; i <= orderIds.size(); i++) {
+            ps.setLong(i, orderIds.get(i - 1));
+        }
         return ps;
     }
 }
