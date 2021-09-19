@@ -24,6 +24,16 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * There is an issue with this code, If you run it you will get the following warning:
+ * ```java
+ * WARNING: An illegal reflective access operation has occurred
+ * WARNING: Illegal reflective access by org.powermock.reflect.internal.WhiteboxImpl (file:/home/josevnz/.m2/repository/org/powermock/powermock-reflect/2.0.6/powermock-reflect-2.0.6.jar) to method java.sql.DriverManager.getConnection(java.lang.String,java.util.Properties,java.lang.Class)
+ * WARNING: Please consider reporting this to the maintainers of org.powermock.reflect.internal.WhiteboxImpl
+ * WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+ * WARNING: All illegal access operations will be denied in a future release
+ * ```
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(UpdateOrderDao.class)
 public class Module4_Tests {
